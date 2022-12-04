@@ -51,7 +51,7 @@ class DailyTask(models.Model):
 class ReplacementAct(models.Model):
     day_of_act = models.DateField(auto_now_add=True)
     daily_task = models.ForeignKey(DailyTask, on_delete=models.CASCADE)
-    gas_meter_remove = models.ForeignKey(GasMeter, on_delete=models.CASCADE)
+    gas_meter_remove = models.ForeignKey(GasMeter, on_delete=models.CASCADE, related_name="meter_remove")
     remove_meter_reading = models.PositiveIntegerField()
-    gas_meter_installable = models.ForeignKey(GasMeter, on_delete=models.CASCADE)
+    gas_meter_installable = models.ForeignKey(GasMeter, on_delete=models.CASCADE, related_name="meter_install")
     installable_meter_reading = models.PositiveIntegerField()

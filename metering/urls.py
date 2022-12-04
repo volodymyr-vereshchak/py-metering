@@ -18,6 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/matering", include("gas_meter_service.urls", namespace="metering")),
-    path("api/user", include("user.urls", namespace="user"))
+    path("api/metering/", include("gas_meter_service.urls", namespace="metering")),
+    path("api/user/", include("user.urls", namespace="user"))
 ]
