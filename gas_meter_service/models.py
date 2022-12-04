@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class Manufacturer(models.Model):
@@ -27,7 +28,7 @@ class GasMeter(models.Model):
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     serial_number = models.CharField(max_length=12)
     date_of_prodaction = models.DateField()
-    date_of_verification = models.DateField()
+    date_of_next_verification = models.DateField()
     date_of_installation = models.DateField()
     meter_reading = models.PositiveIntegerField()
 
@@ -46,6 +47,16 @@ class DailyTask(models.Model):
     locksmith = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     contracts = models.ManyToManyField(Contract)
     gas_meters = models.ManyToManyField(GasMeter, blank=True)
+    
+    @staticmethod
+    def validate_dailytask(day_of_task: str, contracts: list[int]) -> None:
+        for contract in contracts:
+            query_set = Contract.objects.filter(id=contract).values("gas_meters__day_of_next_verification", "perosnal_account")
+            if day_of_task < query_set["day_of_next_verification"]:
+                raise ValidationError(f"{query_set['perosnal_account']}: day of next verification must be less then day of task!")
+
+    def clean(self) -> None:
+        self.validate_dailytask(self.day_of_task, self.contracts)
 
 
 class ReplacementAct(models.Model):
